@@ -1,4 +1,4 @@
-AC_INIT([watchman],[4.9.0],[],[watchman])
+AC_INIT([watchman], [4.9.0], [], [watchman])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([dist-bzip2 subdir-objects])
@@ -228,10 +228,11 @@ if test "x$gimli" != "xno" ; then
   for dir in $dirs ; do
     LDFLAGS="$save_flags $rpath$dir -L$dir"
     LIBS="$save_libs -lgimli"
-    AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+    AC_TRY_LINK([
 #include <libgimli.h>
-]], [[gimli_heartbeat_attach();]])],[gimli_dir=$dir
-    ],[])
+],[gimli_heartbeat_attach();],
+      [gimli_dir=$dir]
+    )
     if test -n "$gimli_dir" ; then
       save_flags="$save_flags $rpath$dir -L$dir"
       save_libs="$save_libs -lgimli"
@@ -321,7 +322,7 @@ if test -n "$GCC" -a "$lenient" = "no" ; then
 fi
 AC_SUBST(IRONMANCFLAGS)
 
-AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_HEADER([config.h])
 AC_CONFIG_FILES([
   Makefile
   thirdparty/jansson/jansson_config.h

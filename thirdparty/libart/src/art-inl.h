@@ -58,12 +58,13 @@ inline unsigned char art_tree<ValueType, KeyType>::keyAt(
 #if !ART_SANITIZE_ADDRESS
     // If we were built with -fsanitize=address, let ASAN catch this,
     // otherwise, make sure we blow up if the input depth is out of bounds.
-    w_assert(idx >= 0 && idx <= key_len,
+    w_assert(idx < key_len,
              "key_at: key is %d %.*s and idx is %d, which is out of bounds",
              key_len, key_len, key, idx);
 #endif
     return key[idx];
 }
+
 
 // A helper to bridge the signed/unsigned differences; the tree implementation
 // really relies on the data being unsigned but everyone uses signed types

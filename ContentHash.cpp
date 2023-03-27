@@ -10,7 +10,7 @@
 #elif defined(_WIN32)
 #include <Wincrypt.h>
 #else
-#include <openssl/sha.h>
+#include <openssl/evp.h>
 #endif
 #include <string>
 #include "Logging.h"
@@ -61,8 +61,14 @@ HashValue ContentHashCache::computeHashImmediate(
   }
 
 #ifndef _WIN32
-  SHA_CTX ctx;
-  SHA1_Init(&ctx);
+  EVP_MD_CTX *mdctx;
+  const EVP_MD *md;
+  unsigned char md_value[EVP_MAX_MD_SIZE];
+  unsigned int md_len;
+
+  md = EVP_sha1();
+  mdctx = EVP_MD_CTX_new();
+  EVP_DigestInit_ex(mdctx, md, NULL);
 
   while (true) {
     auto n = stm->read(buf, sizeof(buf));
@@ -75,10 +81,13 @@ HashValue ContentHashCache::computeHashImmediate(
           std::generic_category(),
           to<std::string>("while reading from ", fullPath));
     }
-    SHA1_Update(&ctx, buf, n);
+    EVP_DigestUpdate(mdctx, buf, n);
   }
 
-  SHA1_Final(result.data(), &ctx);
+  EVP_DigestFinal_ex(mdctx, md_value, &md_len);
+  EVP_MD_CTX_free(mdctx);
+
+  std::copy(md_value, md_value + md_len, result.begin());
 #else
   // Use the built-in crypt provider API on windows to avoid introducing a
   // dependency on openssl in the windows build.

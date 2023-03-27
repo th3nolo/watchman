@@ -195,7 +195,7 @@ json_ref json_null(void);
 
 /* error reporting */
 
-#define JSON_ERROR_TEXT_LENGTH    160
+#define JSON_ERROR_TEXT_LENGTH    512
 #define JSON_ERROR_SOURCE_LENGTH   80
 
 struct json_error_t {

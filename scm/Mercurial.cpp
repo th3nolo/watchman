@@ -12,9 +12,9 @@ namespace watchman {
 
 using Options = ChildProcess::Options;
 
-Mercurial::infoCache::infoCache(std::string path) : dirStatePath(path) {
-  memset(&dirstate, 0, sizeof(dirstate));
+Mercurial::infoCache::infoCache(std::string path) : dirStatePath(path), dirstate{} {
 }
+
 
 w_string Mercurial::infoCache::lookupMergeBase(const std::string& commitId) {
   if (dotChanged()) {
